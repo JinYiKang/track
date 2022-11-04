@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/jin/Documents/eigen-3.3.9/Eigen/"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64",
+            "forcedInclude": [],
+            "browse": {
+                "path": [
+                    "/home/jin/Documents/eigen-3.3.9/Eigen/"
+                ]
+            }
+        }
+    ],
+    "version": 4
+}
