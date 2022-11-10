@@ -22,4 +22,4 @@ $(STATIC_LIB):
 
 .PHONY: clean
 clean:
-	rm main main.o
+	rm main main.o $(STATIC_LIB)

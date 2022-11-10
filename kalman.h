@@ -13,6 +13,8 @@ private:
 
   Eigen::MatrixXd external_noise_cov_;
 
+  Eigen::MatrixXd measure_noise_cov_;
+
   Eigen::MatrixXd measure_trans_;
 
   Eigen::VectorXd stat_pred_;
@@ -24,7 +26,7 @@ private:
   Eigen::MatrixXd stat_cov_refine_;
 
   Eigen::MatrixXd gain_matrix_;
-
+  
   int stat_num_;
 
   int measure_stat_num_;
@@ -34,7 +36,9 @@ public:
 
   void set_predict_matrix(const Eigen::MatrixXd &predict_matrix);
 
-  void set_external_noise(const Eigen::MatrixXd &noise_cov);
+  void set_external_noise_cov(const Eigen::MatrixXd &noise_cov);
+
+  void set_measure_noise_cov(const Eigen::MatrixXd &noise_cov);
 
   void set_measure_transform_matrix(const Eigen::MatrixXd &measure_trans);
 
@@ -42,7 +46,7 @@ public:
 
   void predict();
 
-  void correct(const Eigen::VectorXd &measure_stat, const Eigen::MatrixXd &measure_noise_cov);
+  void correct(const Eigen::VectorXd &measure_stat);
 
   void get_predict_state(Eigen::VectorXd &stat);
 
