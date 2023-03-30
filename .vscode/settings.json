@@ -60,6 +60,11 @@
         "thread": "cpp",
         "cfenv": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "csignal": "cpp",
+        "typeindex": "cpp",
+        "hash_map": "cpp",
+        "future": "cpp",
+        "valarray": "cpp"
     }
 }

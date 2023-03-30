@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/home/jin/Documents/eigen-3.3.9/Eigen/"
+                "/home/jin/Documents/eigen-3.3.9/"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
@@ -14,7 +14,7 @@
             "forcedInclude": [],
             "browse": {
                 "path": [
-                    "/home/jin/Documents/eigen-3.3.9/Eigen/"
+                    "/home/jin/Documents/eigen-3.3.9/"
                 ]
             }
         }

@@ -1,88 +1,49 @@
-#include "kalman.h"
-#include "ukf.h"
-#include <opencv2/opencv.hpp>
-#include <Eigen>
-#include <functional>
-using namespace Eigen;
-using namespace cv;
+#include "../src/tracker_manager.hpp"
+#include <iostream>
+#include <fstream>
+#include <thread>
 
-Mat img(500, 1000, CV_8UC3);
-Point mouse_pos;
-const int state_num = 2;
-const int measure_state_num = 1;
-
-// static void onMouse(int event, int x, int y, int flags, void *param)
-// {
-//     if (event == EVENT_MOUSEMOVE)
-//     {
-//         x = std::max(0, x);
-//         x = std::min(x, img.cols);
-//         y = std::max(0, y);
-//         y = std::min(y, img.rows);
-//         mouse_pos.x = x;
-//         mouse_pos.y = y;
-//     }
-// }
-
-double calc_func(double x)
-{
-    return 100.0 * std::sin(x * 0.1) + 250.0;
-}
-
-VectorXd precidt_operator(const Eigen::VectorXd &sigma_point)
-{
-    double x = sigma_point(0);
-    double y = sigma_point(1);
-    VectorXd sigma_new(state_num);
-    sigma_new(0) = x + 1;
-    sigma_new(1) = calc_func(x);
-    return sigma_new;
-}
-
-VectorXd measure_operator(const Eigen::VectorXd &sigma_point)
-{
-    double y = sigma_point(1);
-    VectorXd sigma_new(measure_state_num);
-    sigma_new(0) = y;
-    return sigma_new;
-}
-
+using namespace inno_track;
 int main()
 {
-    // Kalman KF(4, 2);
-    UKF ukf(state_num, measure_state_num);
-    ukf.set_predict_callback(
-        std::function<Eigen::VectorXd(const Eigen::VectorXd &)>(precidt_operator));
-    ukf.set_measure_transform_callback(
-        std::function<Eigen::VectorXd(const Eigen::VectorXd &)>(measure_operator));
-    auto measure_state = VectorXd(measure_state_num);
-    auto state_pred = VectorXd(state_num);
+  iJIPDA_Tracker bayes_tracker;
 
-    namedWindow("test");
-    // setMouseCallback("mouse_move", onMouse, 0);
-    Point last_pt(0, 250);
-    Point last_pt_gt(0, 250);
-    for (int i = 0; i < 1000; ++i)
+  std::vector<Box> boxes(6);
+  boxes[0].x = 0, boxes[0].y = 0, boxes[0].speed_x = 10, boxes[0].speed_y = 10;
+  boxes[1].x = 0, boxes[1].y = 200, boxes[1].speed_x = 10, boxes[1].speed_y = -10;
+  boxes[2].x = 0, boxes[2].y = 100, boxes[2].speed_x = 10, boxes[2].speed_y = 10;
+  boxes[3].x = 0, boxes[3].y = 20, boxes[3].speed_x = 10, boxes[3].speed_y = 10;
+  boxes[4].x = 0, boxes[4].y = -50, boxes[4].speed_x = 10, boxes[4].speed_y = 20;
+  boxes[5].x = 0, boxes[5].y = 300, boxes[5].speed_x = 10, boxes[5].speed_y = -30;
+
+  bayes_tracker.add_new_track(boxes[0]);
+  bayes_tracker.add_new_track(boxes[1]);
+  bayes_tracker.add_new_track(boxes[2]);
+  bayes_tracker.add_new_track(boxes[3]);
+  bayes_tracker.add_new_track(boxes[4]);
+  bayes_tracker.add_new_track(boxes[5]);
+
+  std::ofstream ofile("../traj.txt", std::ios::trunc);
+  for (int i = 1; i < 100; ++i)
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    double x = i * 1.0;
+    boxes[0].x = x, boxes[1].x = x, boxes[2].x = x, boxes[3].x = x, boxes[4].x = x, boxes[5].x = x;
+    boxes[0].y = 2 * x;
+    boxes[1].y = -2 * x + 200.0;
+    boxes[2].y = 100.0;
+    boxes[3].y = 1.6 * x + 20.0;
+    boxes[4].y = 3 * x - 50.0;
+    boxes[5].y = -4 * x + 300.0;
+    bayes_tracker.update_tracks(boxes);
+    std::vector<Box> box_out;
+    bayes_tracker.get_tracks(box_out);
+    for (auto &box : box_out)
     {
-        ukf.predict();
-        double x = i*1.0 + rand() * 1.0 / RAND_MAX;
-        measure_state(0) = calc_func(x) + (rand() * 50.0 / RAND_MAX - 25.0);
-        ukf.correct(measure_state);
-        ukf.get_predict_state(state_pred);
-
-        Point cur_pt(i, state_pred(1));
-        Point cur_pt_gt(i, calc_func(i));
-        line(img, last_pt, cur_pt, Scalar(0, 255, 0));
-        // line(img, last_pt_gt, cur_pt_gt, Scalar(255, 255, 255));
-        circle(img, Point(x, measure_state(0)), 2, Scalar(0, 0, 255));
-
-        // std::cout << "predict state:" << state_pred << std::endl;
-        last_pt = cur_pt;
-        last_pt_gt = cur_pt_gt;
-        imshow("test", img);
-        waitKey(10);
+      ofile << box.id << "," << box.x << "," << box.y << std::endl;
+      std::cout << box.id << "," << box.x << "," << box.y << "," << box.speed_x << "," << box.speed_y << std::endl;
     }
-    waitKey(0);
+  }
 
-    return 0;
+  return 0;
 }
