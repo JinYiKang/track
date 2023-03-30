@@ -9,7 +9,7 @@ INC = \
 
 OBJ_DIR = ./
 OBJ = $(patsubst %.cc, %.o, $(wildcard ./src/*.cc))
-STATIC_LIB = $(OBJ_DIR)/libkalman.a
+STATIC_LIB = $(OBJ_DIR)/libtrack.a
 
 $(STATIC_LIB):$(OBJ)
 	$(AR) rcs $@ $^

@@ -1,9 +1,8 @@
-#include "../src/tracker_manager.hpp"
+#include "../src/ijipda.h"
 #include <iostream>
 #include <fstream>
 #include <thread>
 
-using namespace inno_track;
 int main()
 {
   iJIPDA_Tracker bayes_tracker;

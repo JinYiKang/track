@@ -9,7 +9,7 @@ INC = -I/home/jin/Documents/eigen-3.3.9/ \
 	  -I../
 
 
-STATIC_LIB = ../libkalman.a
+STATIC_LIB = ../libtrack.a
 
 main: main.o $(STATIC_LIB)
 	g++ -o main main.o -lboost_system $(PCL_LIB) $(OPENCV_LIB) $(VTK_LIB) $(STATIC_LIB)
