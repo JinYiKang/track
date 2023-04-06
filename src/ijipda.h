@@ -3,30 +3,32 @@
 
 #include <stdint.h>
 
+#include <chrono>
 #include <iostream>
 #include <map>
 #include <set>
 #include <vector>
-#include <chrono>
-#include <Eigen/Dense>
-#include "common.h"
-#include "kalman_filter.hpp"
 
-struct BayesVariables
-{
+#include <Eigen/Dense>
+
+#include "common.h"
+#include "kf.hpp"
+
+namespace bayes_track {
+struct BayesVariables {
   double p_d;
   double p_g;
   Eigen::Vector3d existence;
 };
 
-class iJIPDA_Tracker
-{
-public:
+class iJIPDA_Tracker {
+ public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   iJIPDA_Tracker();
 
-  iJIPDA_Tracker(int max_levels, double clutter_spatial_density, double delete_dur_sec);
+  iJIPDA_Tracker(int max_levels, double clutter_spatial_density,
+                 double delete_dur_sec);
 
   void set_existence_transform_matrix(const Eigen::Matrix3d &transf_mat);
 
@@ -36,7 +38,9 @@ public:
 
   void add_new_track(const Box &box);
 
-private:
+  bool is_vaild_measure(const Box& box);
+
+ private:
   std::map<uint64_t, KalmanFilter *> trackers_;
 
   std::map<uint64_t, BayesVariables> bayes_variables_;
@@ -88,11 +92,12 @@ private:
 
   void update_existence_(BayesVariables &var, double sum_weighted_like);
 
-  void delete_inactive_tracks_(const std::multimap<uint64_t, size_t> &vaild_measures);
+  void delete_inactive_tracks_(
+      const std::multimap<uint64_t, size_t> &vaild_measures);
 
-private:
-  virtual std::pair<KalmanFilter *, BayesVariables>
-  create_new_track_(const Box &box);
+ private:
+  virtual std::pair<KalmanFilter *, BayesVariables> create_new_track_(
+      const Box &box);
 
   virtual Eigen::VectorXd get_measure_state_(const Box &box);
 
@@ -100,5 +105,5 @@ private:
 
   virtual bool inner_gate_(const KalmanFilter *const klm, const Box &box);
 };
-
+}  // namespace bayes_track
 #endif
